@@ -13,8 +13,7 @@
 </head>
 
 <body>
-	<h1>hello</h1>
-	<a href="log2">log2</a>
+	<h1>hello2</h1>
 	<a href = "logout">logout</a>
 </body>
 

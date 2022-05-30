@@ -33,9 +33,4 @@ public class HomeController {
         return this.userService.addUser(user);
     }
 
-    @GetMapping("/welcome")
-    public String welcome()
-    {
-        return "Welcome";
-    }
 }
