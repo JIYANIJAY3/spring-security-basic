@@ -6,18 +6,20 @@ package com.inexture.utility;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 @Component
 public class JwtUtil {
 
-    private String SECRET_KEY = "Jiyani";
+    private final String SECRET_KEY = "Jiyani";
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -41,11 +43,15 @@ public class JwtUtil {
 
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
+        for (GrantedAuthority ud:userDetails.getAuthorities()){
+            claims.put("ROLE_",ud);
+        }
         return createToken(claims, userDetails.getUsername());
     }
 
     private String createToken(Map<String, Object> claims, String subject) {
-
+        System.out.println("claims: "+claims);
+        System.out.println("Subject: "+subject);
         return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();

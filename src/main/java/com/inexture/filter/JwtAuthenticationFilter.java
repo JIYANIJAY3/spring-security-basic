@@ -3,6 +3,7 @@ package com.inexture.filter;//package com.inexture.filter;
 import com.inexture.service.CustomUserDetailsService;
 import com.inexture.utility.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -32,7 +33,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         //Bearer
         //validate
 
-       String requestTokenHeader =  request.getHeader("Authorization");
+       String requestTokenHeader =  request.getHeader(HttpHeaders.AUTHORIZATION);
+
+       System.out.println("requestTokenHeader: "+requestTokenHeader);
        String username = null;
        String jwtToken = null;
 
@@ -52,12 +55,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
            assert username != null;
            UserDetails userDetails =  this.customUserDetailsService.loadUserByUsername(username);
 
+           System.out.println("SecurityContextHolder.getContext().getAuthentication(): "+SecurityContextHolder.getContext().getAuthentication());
            //security
            if(SecurityContextHolder.getContext().getAuthentication() == null)
            {
               UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =  new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
               usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
               SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+               System.out.println("token valid");
            }
            else
            {
@@ -68,8 +73,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
        {
            System.out.println("check header");
        }
-        System.out.println(1);
        filterChain.doFilter(request,response);
-        System.out.println(2);
     }
 }
